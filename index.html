@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>半切り土管、今日でバイバイ。〜スライドダンプ載せ込み作戦〜</title>
+<title>半切り土管、今日でバイバイ。〜分解・運搬・スライドダンプ載せ込み作戦〜</title>
 <style>
   :root{
     --hud-bg: rgba(14,17,21,.72);
@@ -160,13 +160,13 @@
 <div id="ui">
 
   <div id="hudTop">
-    <div id="title">半切り土管、今日でバイバイ。<small>〜スライドダンプ載せ込み作戦〜 / MM20CR風 2t級ユンボ</small></div>
+    <div id="title">半切り土管、今日でバイバイ。<small>〜分解・運搬・スライドダンプ載せ込み作戦〜 / MM20CR風 2t級ユンボ</small></div>
     <div class="gaugeWrap">
-      <div class="gaugeLbl"><span>押し込み進行度 LOADING PROGRESS</span><span id="progLbl">0%</span></div>
+      <div class="gaugeLbl"><span>全体進行度 TASK PROGRESS</span><span id="progLbl">0%</span></div>
       <div class="gauge"><i id="progFill"></i><b id="progTxt">0 %</b></div>
     </div>
     <div id="stats">
-      <span>土管X <b id="sPipeX">0.80</b> m</span>
+      <span>土管X <b id="sPipeX">-4.80</b> m</span>
       <span>ブレード <b id="sBlade">+0.05</b> m</span>
       <span>ブーム <b id="sBoom">14</b>°</span>
       <span>アーム <b id="sArm">-86</b>°</span>
@@ -175,7 +175,7 @@
     </div>
   </div>
 
-  <div id="hint">まずは「ブレード ▼」で排土板を下げ、「▲ 前進」で土管を押してみよう</div>
+  <div id="hint">まずはバケットやアームで上の土管（∩）を突いて崩そう！</div>
 
   <div id="tools">
     <button class="tbtn" id="btnCam">視点リセット</button>
@@ -220,16 +220,10 @@
 <div class="modal" id="dlgStart">
   <div class="card">
     <h1>半切り土管、今日でバイバイ。</h1>
-    <h2>〜 スライドダンプ載せ込み作戦 〜</h2>
+    <h2>〜 分解・運搬・スライドダンプ載せ込み作戦 〜</h2>
     <p>
-      相続した土地に、業者が置き去りにした巨大なコンクリート土管。連絡はもう付かない。
-      素人のオーナーは覚悟を決め、自力で土管を<b>半分に切断</b>した。
-      武器は <b>140万円で買った2トンクラスのユンボ</b> と、後ろへ斜めに降りた <b>スライドダンプ</b>。
-      理屈もクソもない。<b>排土板とバケットで、強引に押し込む。</b>
-    </p>
-    <p style="opacity:.8">
-      目標：断面が「∪」の半切り土管を、スロープ状の荷台の奥まで押し切ること。
-      押す手を止めれば、20°の斜面を土管はズルズル落ちてくる。
+      相続した土地に残された巨大な土管。自力で半分に切断したものの、<b>重ね合わさった状態（円管）</b>のまま放置されている。
+      まずはバケットで上の土管（∩）を突き落として<b>分解</b>し、下の土管（U）をダンプの前まで<b>押して運搬</b>、最後に<b>ダンプの荷台へ押し込もう！</b>
     </p>
     <div class="ctrlGrid">
       <div><b>左レバー</b> 前後=ブーム下げ/上げ <span class="key">W</span><span class="key">S</span><br>左右=旋回 <span class="key">A</span><span class="key">Z</span></div>
@@ -243,17 +237,17 @@
 
 <div class="modal hidden" id="dlgWin">
   <div class="card win">
-    <h1>🎉 強引に押し込み成功！</h1>
-    <h2>LOADING COMPLETE — 100%</h2>
+    <h1>🎉 分解・運搬・載せ込み成功！</h1>
+    <h2>TASK COMPLETE — 100%</h2>
     <p style="font-size:14px;line-height:2">
-      入りました。<br>
-      でもまだ半分あります。<br>
+      無事に荷台奥まで入りました。<br>
+      でも、横に落ちたもう半分が残っています。<br>
       ご視聴ありがとうございました。
     </p>
     <p style="opacity:.72;font-size:11.5px">
-      ※ 排土板とバケットによる強引な載せ込みは、実際の現場では絶対に真似しないでください。
+      ※ 排土板やバケットによる強引な載せ込みは、実際の現場では危険ですので真似しないでください。
     </p>
-    <button class="go" id="btnAgain">もう半分もやる（リトライ）</button>
+    <button class="go" id="btnAgain">もう一度やる（リトライ）</button>
     <button class="go sub" id="btnFree">この場を眺める（自由操作）</button>
   </div>
 </div>
@@ -306,14 +300,14 @@ const GOAL_X  = 5.5;
 const PIPE_R_OUT = 0.65, PIPE_R_IN = 0.52, PIPE_LEN = 2.2;
 const PIPE_REST  = 0.35;
 
-const MACHINE_X0 = -2.5, MACHINE_Z0 = 0.5;
+// ユンボ初期位置
+const MACHINE_X0 = -6.8, MACHINE_Z0 = 0.5;
+// 土管初期位置（トラックから離れた場所）
+const PIPE_INIT_X = -4.8, PIPE_INIT_Z = 0.5;
 
 const clamp = (v,a,b)=> v<a?a:(v>b?b:v);
 const lerp  = (a,b,t)=> a+(b-a)*t;
 const UP    = new THREE.Vector3(0,1,0);
-
-const tmpA = new THREE.Vector3();
-const tmpB = new THREE.Vector3();
 
 function surfaceH(x,z){
   if(x >= RAMP_X0 && x <= RAMP_X1 && Math.abs(z-TRUCK_Z) < BED_HALF_W+0.35){
@@ -474,17 +468,10 @@ function cyl(rt,rb,h,seg,mat){
     r.rotation.set(Math.random()*3,Math.random()*3,Math.random()*3);
     r.castShadow=true; r.receiveShadow=true; scene.add(r);
   }
-  for(let i=0;i<220;i++){
-    const b=new THREE.Mesh(new THREE.ConeGeometry(0.05+Math.random()*0.05, 0.22+Math.random()*0.2, 4),
-      new THREE.MeshStandardMaterial({color:0x4d7a3a, roughness:1.0}));
-    b.position.set(-16+Math.random()*32, 0.12, -14+Math.random()*24);
-    if(Math.abs(b.position.x-1)<6 && Math.abs(b.position.z-0.5)<3) continue;
-    scene.add(b);
-  }
 })();
 
 /* =========================================================================
-   4. 半切りコンクリート土管（断面「∪」／進行方向に長い＋5度傾け）
+   4. 半切りコンクリート土管（2分割：下側U字 ＆ 上側逆さ∩字）
    ========================================================================= */
 function buildHalfPipe(){
   const g = new THREE.Group();
@@ -517,16 +504,13 @@ function buildHalfPipe(){
   return g;
 }
 
+// メイン土管（下側 U字）
 const pipeMesh = buildHalfPipe();
-pipeMesh.position.set(0.8, PIPE_REST, 0.5);
-pipeMesh.rotation.set(0, 5*DEG, 0, 'YXZ');
 scene.add(pipeMesh);
 
-const pipeOther = buildHalfPipe();
-pipeOther.position.set(-0.6, PIPE_REST, -3.4);
-pipeOther.rotation.set(0, 0.35, Math.PI);
-pipeOther.position.y = PIPE_REST + 0.30;
-scene.add(pipeOther);
+// 上の合体用土管（上側 ∩字）
+const pipeTopMesh = buildHalfPipe();
+scene.add(pipeTopMesh);
 
 /* =========================================================================
    5. スライドダンプ
@@ -552,8 +536,6 @@ function buildSlideDump(){
   }
   const dc = cyl(0.075,0.075,1.35,12,M.chrome);
   dc.position.set(-0.55,1.0,0); dc.rotation.z = -0.55; g.add(dc);
-  const dcb = cyl(0.11,0.11,0.55,12,M.steelD);
-  dcb.position.set(-1.05,0.72,0); dcb.rotation.z = -0.55; g.add(dcb);
 
   const cab = box(1.38,1.22,1.82,M.white); cab.position.set(CAB_X-TRUCK_X, 1.46, 0); g.add(cab);
   const wf  = box(0.06,0.62,1.60,M.glass); wf.position.set(CAB_X-TRUCK_X+0.70, 1.68, 0); g.add(wf);
@@ -561,12 +543,6 @@ function buildSlideDump(){
     const ws = box(1.10,0.50,0.05,M.glass); ws.position.set(CAB_X-TRUCK_X, 1.66, zs*0.915); g.add(ws);
   }
   const roof = box(1.42,0.10,1.86,M.white); roof.position.set(CAB_X-TRUCK_X,2.10,0); g.add(roof);
-  const bump = box(0.22,0.30,1.90,M.steelD); bump.position.set(CAB_X-TRUCK_X+0.78,0.62,0); g.add(bump);
-  for(const zs of [-1,1]){
-    const lp = box(0.10,0.18,0.26,M.amber); lp.position.set(CAB_X-TRUCK_X+0.72,0.95,zs*0.72); g.add(lp);
-    const mr = box(0.05,0.30,0.08,M.dark); mr.position.set(CAB_X-TRUCK_X+0.55,1.85,zs*1.02); g.add(mr);
-  }
-  const grill = box(0.06,0.34,1.10,M.dark); grill.position.set(CAB_X-TRUCK_X+0.72,1.15,0); g.add(grill);
 
   const bed = new THREE.Group();
   bed.position.set(RAMP_X0 - TRUCK_X, RAMP_Y0, 0);
@@ -576,23 +552,12 @@ function buildSlideDump(){
   const floor = box(RAMP_LEN, 0.09, BED_HALF_W*2, M.rust);
   floor.position.set(RAMP_LEN/2, -0.05, 0); bed.add(floor);
 
-  for(let i=0;i<26;i++){
-    const rib = box(0.045,0.012,BED_HALF_W*2-0.06, M.steelD);
-    rib.position.set(0.12+i*0.158, 0.004, 0); bed.add(rib);
-  }
   for(const zs of [-1,1]){
     const wl = box(RAMP_LEN, 0.30, 0.07, M.rust);
     wl.position.set(RAMP_LEN/2, 0.14, zs*BED_HALF_W); bed.add(wl);
-    for(let i=0;i<6;i++){
-      const st = box(0.07,0.34,0.10,M.steelD);
-      st.position.set(0.35+i*0.72, 0.16, zs*BED_HALF_W); bed.add(st);
-    }
   }
   const head = box(0.11, 0.80, BED_HALF_W*2, M.rust);
   head.position.set(RAMP_LEN-0.06, 0.38, 0); bed.add(head);
-
-  const lip = new THREE.Mesh(new THREE.BoxGeometry(0.42,0.028,BED_HALF_W*2-0.12), M.steel);
-  lip.position.set(0.10,-0.012,0); lip.castShadow=false; lip.receiveShadow=true; bed.add(lip);
 
   scene.add(g);
   return g;
@@ -646,12 +611,6 @@ const EX = {};
     for(const xs of [-1,1]){
       const wh = cyl(R*0.80,R*0.80,w*0.62,16,M.steelD);
       wh.rotation.x=Math.PI/2; wh.position.set(xs*L/2,0,0); t.add(wh); wheels.push(wh);
-      const hub = cyl(R*0.34,R*0.34,w*0.80,10,M.dark);
-      hub.rotation.x=Math.PI/2; hub.position.set(xs*L/2,0,0); t.add(hub);
-    }
-    for(let i=-1;i<=1;i++){
-      const rl = cyl(0.085,0.085,w*0.55,12,M.steelD);
-      rl.rotation.x=Math.PI/2; rl.position.set(i*0.42,-R*0.55,0); t.add(rl);
     }
     t.position.set(0, 0.238, zs*0.60);
     tilt.add(t);
@@ -660,28 +619,15 @@ const EX = {};
   EX.tracks.push(buildTrack(-1), buildTrack(1));
 
   const tf = box(1.42,0.20,1.02,M.blue2); tf.position.set(-0.02,0.33,0); tilt.add(tf);
-  const tf2= box(0.55,0.24,1.42,M.blue2); tf2.position.set(-0.02,0.31,0); tilt.add(tf2);
 
   addPusher(tilt, 0.72, 0.30, 0.0, 0.10,'body');
-  addPusher(tilt, 0.72, 0.30, 0.45,0.10,'body');
-  addPusher(tilt, 0.72, 0.30,-0.45,0.10,'body');
 
   const blade = new THREE.Group();
   blade.position.set(0.98, 0.05, 0);
   tilt.add(blade);
   EX.blade = blade;
-  for(const zs of [-1,1]){
-    const armb = box(0.52,0.11,0.13,M.blue2);
-    armb.position.set(-0.24,0.30,zs*0.42); blade.add(armb);
-  }
-  const plate = box(0.11,0.52,1.62,M.blue);
-  plate.position.set(0.07,0.30,0); blade.add(plate);
-  const edge  = box(0.14,0.09,1.62,M.steel);
-  edge.position.set(0.07,0.055,0); blade.add(edge);
-  for(let i=-2;i<=2;i++){
-    const rib = box(0.07,0.42,0.07,M.blue2);
-    rib.position.set(-0.02,0.32,i*0.36); blade.add(rib);
-  }
+  const plate = box(0.11,0.52,1.62,M.blue); plate.position.set(0.07,0.30,0); blade.add(plate);
+
   for(const z of [-0.72,-0.36,0,0.36,0.72]){
     addPusher(blade, 0.14, 0.30, z, 0.055,'blade');
     addPusher(blade, 0.14, 0.09, z, 0.055,'blade');
@@ -692,53 +638,18 @@ const EX = {};
   const turret = new THREE.Group(); turret.position.set(-0.02,0.47,0); tilt.add(turret);
   EX.turret = turret;
 
-  const swingRing = cyl(0.50,0.52,0.10,26,M.dark); swingRing.position.y=-0.02; turret.add(swingRing);
   const deck = box(1.86,0.13,1.44,M.blue); deck.position.set(-0.05,0.08,0); turret.add(deck);
-  const deckW= box(1.90,0.05,1.48,M.white); deckW.position.set(-0.05,0.15,0); turret.add(deckW);
-
-  const cw = new THREE.Mesh(new THREE.CylinderGeometry(0.60,0.60,0.58,26,1,false,Math.PI*0.5,Math.PI), M.blue2);
-  cw.position.set(-0.62,0.40,0); cw.castShadow=true; turret.add(cw);
-  const cwT = box(0.34,0.10,1.12,M.white); cwT.position.set(-0.72,0.70,0); turret.add(cwT);
-
-  const hood = box(0.86,0.44,1.06,M.white); hood.position.set(-0.16,0.40,0.06); turret.add(hood);
-  const hoodT= box(0.90,0.06,1.10,M.blue); hoodT.position.set(-0.16,0.63,0.06); turret.add(hoodT);
-  const exh  = cyl(0.045,0.045,0.30,10,M.steelD); exh.position.set(-0.05,0.78,0.42); turret.add(exh);
 
   const cabG = new THREE.Group(); cabG.position.set(0.02,0.15,-0.36); turret.add(cabG);
-  const cfloor = box(0.86,0.06,0.78,M.dark); cfloor.position.set(0,0.02,0); cabG.add(cfloor);
-  for(const p of [[-0.38,-0.34],[-0.38,0.34],[0.36,-0.34],[0.36,0.34]]){
-    const post = box(0.06,1.18,0.06,M.white); post.position.set(p[0],0.62,p[1]); cabG.add(post);
-  }
   const croof = box(1.00,0.07,0.88,M.white); croof.position.set(0,1.22,0); cabG.add(croof);
-  const croof2= box(1.04,0.03,0.92,M.blue); croof2.position.set(0,1.27,0); cabG.add(croof2);
-  const cback = box(0.05,0.98,0.80,M.blue); cback.position.set(-0.40,0.55,0); cabG.add(cback);
-  const seat  = box(0.34,0.10,0.42,M.black); seat.position.set(-0.12,0.34,0); cabG.add(seat);
-  const seatB = box(0.09,0.44,0.42,M.black); seatB.position.set(-0.28,0.55,0); cabG.add(seatB);
-  for(const zs of [-1,1]){
-    const lev = cyl(0.022,0.022,0.34,8,M.dark); lev.position.set(0.02,0.50,zs*0.26); lev.rotation.z=0.12; cabG.add(lev);
-    const knob= new THREE.Mesh(new THREE.SphereGeometry(0.045,10,8),M.black); knob.position.set(0.04,0.67,zs*0.26); cabG.add(knob);
-  }
 
   const man = new THREE.Group(); man.position.set(-0.10,0.30,0);
-  const legs = box(0.36,0.16,0.34,M.jeans); legs.position.set(0.12,0.10,0); man.add(legs);
-  const shin = box(0.16,0.34,0.30,M.jeans); shin.position.set(0.26,-0.02,0); man.add(shin);
   const torso= box(0.30,0.38,0.36,M.red); torso.position.set(0,0.36,0); man.add(torso);
-  for(const zs of [-1,1]){
-    const armM = cyl(0.055,0.055,0.34,8,M.red);
-    armM.position.set(0.14,0.36,zs*0.20); armM.rotation.z=-1.05; man.add(armM);
-    const hand= new THREE.Mesh(new THREE.SphereGeometry(0.052,10,8),M.skin);
-    hand.position.set(0.30,0.42,zs*0.24); man.add(hand);
-  }
   const head = new THREE.Mesh(new THREE.SphereGeometry(0.105,16,12),M.skin); head.position.set(0.02,0.66,0); man.add(head);
-  const helm = new THREE.Mesh(new THREE.SphereGeometry(0.128,18,12,0,Math.PI*2,0,Math.PI*0.56),M.helmet);
-  helm.position.set(0.02,0.68,0); man.add(helm);
-  const brim = cyl(0.145,0.145,0.02,18,M.helmet); brim.position.set(0.02,0.695,0); man.add(brim);
-  man.traverse(o=>{ if(o.isMesh) o.castShadow=true; });
+  const helm = new THREE.Mesh(new THREE.SphereGeometry(0.128,18,12,0,Math.PI*2,0,Math.PI*0.56),M.helmet); helm.position.set(0.02,0.68,0); man.add(helm);
   cabG.add(man);
 
-  const boomPivot = new THREE.Group();
-  boomPivot.position.set(0.60,0.30,0.17);
-  turret.add(boomPivot);
+  const boomPivot = new THREE.Group(); boomPivot.position.set(0.60,0.30,0.17); turret.add(boomPivot);
   EX.boom = boomPivot;
 
   const boomTip = new THREE.Vector3();
@@ -746,40 +657,24 @@ const EX = {};
     const segs=7, total=2.05, sl=total/segs;
     let ang=0.62, x=0, y=0;
     for(let i=0;i<segs;i++){
-      const h=0.27-0.013*i, w=0.30-0.016*i;
-      const b = box(sl*1.10, h, w, M.blue);
+      const b = box(sl*1.10, 0.25, 0.28, M.blue);
       b.position.set(x+Math.cos(ang)*sl/2, y+Math.sin(ang)*sl/2, 0);
       b.rotation.z = ang; boomPivot.add(b);
-      const p = box(sl*1.02, h*0.55, w+0.03, M.blue2);
-      p.position.copy(b.position); p.rotation.z = ang; boomPivot.add(p);
       x += Math.cos(ang)*sl; y += Math.sin(ang)*sl; ang -= 0.16;
     }
     boomTip.set(x,y,0);
   }
-  const bBoss = cyl(0.13,0.13,0.34,14,M.steelD); bBoss.rotation.x=Math.PI/2; boomPivot.add(bBoss);
 
-  const armPivot = new THREE.Group();
-  armPivot.position.copy(boomTip);
-  boomPivot.add(armPivot);
+  const armPivot = new THREE.Group(); armPivot.position.copy(boomTip); boomPivot.add(armPivot);
   EX.arm = armPivot;
 
   const ARM_L = 1.06;
-  const armBody = box(ARM_L,0.23,0.24,M.blue);
-  armBody.position.set(ARM_L/2,0,0); armPivot.add(armBody);
-  const armBody2= box(ARM_L*0.7,0.30,0.20,M.blue2);
-  armBody2.position.set(ARM_L*0.32,0.02,0); armPivot.add(armBody2);
-  const aBoss = cyl(0.115,0.115,0.30,14,M.steelD); aBoss.rotation.x=Math.PI/2; armPivot.add(aBoss);
-  const aBoss2= cyl(0.10,0.10,0.28,14,M.steelD); aBoss2.rotation.x=Math.PI/2; aBoss2.position.set(ARM_L,0,0); armPivot.add(aBoss2);
-  const aLug  = box(0.26,0.14,0.20,M.blue2); aLug.position.set(0.20,0.19,0); armPivot.add(aLug);
+  const armBody = box(ARM_L,0.23,0.24,M.blue); armBody.position.set(ARM_L/2,0,0); armPivot.add(armBody);
 
-  const bktPivot = new THREE.Group();
-  bktPivot.position.set(ARM_L,0,0);
-  armPivot.add(bktPivot);
+  const bktPivot = new THREE.Group(); bktPivot.position.set(ARM_L,0,0); armPivot.add(bktPivot);
   EX.bucket = bktPivot;
 
-  const bktMesh = new THREE.Group();
-  bktMesh.rotation.z = -1.34;
-  bktPivot.add(bktMesh);
+  const bktMesh = new THREE.Group(); bktMesh.rotation.z = -1.34; bktPivot.add(bktMesh);
   EX.bktMesh = bktMesh;
 
   {
@@ -793,24 +688,9 @@ const EX = {};
     g.translate(0,0,-BW/2); g.computeVertexNormals();
     const m = new THREE.Mesh(g, M.steelD); m.castShadow=true; m.receiveShadow=true; bktMesh.add(m);
 
-    const sp = new THREE.Shape();
-    sp.moveTo(0,0); sp.absarc(0,0,RO,a0,a1,false); sp.lineTo(0,0);
-    for(const zs of [-1,1]){
-      const gg = new THREE.ExtrudeGeometry(sp,{depth:0.028,bevelEnabled:false,curveSegments:30,steps:1});
-      const mm = new THREE.Mesh(gg, M.steel);
-      mm.position.z = zs*BW/2 + (zs<0? -0.028 : 0);
-      mm.castShadow=true; bktMesh.add(mm);
-    }
-    const tg = new THREE.Group();
-    tg.rotation.z = a1;
-    tg.position.set(Math.cos(a1)*(RO-0.015), Math.sin(a1)*(RO-0.015), 0);
-    bktMesh.add(tg);
+    const tg = new THREE.Group(); tg.rotation.z = a1; tg.position.set(Math.cos(a1)*(RO-0.015), Math.sin(a1)*(RO-0.015), 0); bktMesh.add(tg);
     for(let i=0;i<5;i++){
       const z = -BW/2 + 0.09 + i*((BW-0.18)/4);
-      const t = box(0.15,0.055,0.075,M.steel);
-      t.position.set(0.065,0,z); tg.add(t);
-      const tip = new THREE.Mesh(new THREE.ConeGeometry(0.038,0.09,4), M.chrome);
-      tip.rotation.z = -Math.PI/2; tip.position.set(0.175,0,z); tip.castShadow=true; tg.add(tip);
       addPusher(tg, 0.20, 0, z, 0.05,'bkt');
     }
     for(const a of [-150*DEG,-115*DEG,-80*DEG,-45*DEG]){
@@ -818,21 +698,12 @@ const EX = {};
         addPusher(bktMesh, Math.cos(a)*(RO+0.03), Math.sin(a)*(RO+0.03), z, 0.06,'bktBack');
       }
     }
-    for(let i=0;i<3;i++){
-      const a=-140*DEG + i*45*DEG;
-      const rb = box(0.10,0.05,BW*1.01,M.steel);
-      rb.position.set(Math.cos(a)*(RO+0.012),Math.sin(a)*(RO+0.012),0);
-      rb.rotation.z=a; bktMesh.add(rb);
-    }
   }
-  const bBoss2 = cyl(0.085,0.085,0.28,12,M.steelD); bBoss2.rotation.x=Math.PI/2; bktPivot.add(bBoss2);
 
   EX.aBoomBase = new THREE.Object3D(); EX.aBoomBase.position.set(0.06,0.26,0.17); turret.add(EX.aBoomBase);
   EX.aBoomRod  = new THREE.Object3D(); EX.aBoomRod.position.set(0.74,-0.15,0.0); boomPivot.add(EX.aBoomRod);
-
   EX.aArmBase  = new THREE.Object3D(); EX.aArmBase.position.set(0.52,0.30,0.0);  boomPivot.add(EX.aArmBase);
   EX.aArmRod   = new THREE.Object3D(); EX.aArmRod.position.set(0.24,0.20,0.0);   armPivot.add(EX.aArmRod);
-
   EX.aBktBase  = new THREE.Object3D(); EX.aBktBase.position.set(0.16,0.22,0.0);  armPivot.add(EX.aBktBase);
   EX.aBktRod   = new THREE.Object3D(); EX.aBktRod.position.set(-0.13,0.29,0.0);  bktPivot.add(EX.aBktRod);
   EX.aBktLink  = new THREE.Object3D(); EX.aBktLink.position.set(0.92,0.18,0.0);  armPivot.add(EX.aBktLink);
@@ -840,10 +711,7 @@ const EX = {};
 
 function makeCyl(barrelLen, barrelR, rodR){
   const g = new THREE.Group();
-  const barrel = cyl(barrelR,barrelR,barrelLen,16,M.dark);
-  barrel.position.y = barrelLen/2; g.add(barrel);
-  const cap1 = cyl(barrelR*1.16,barrelR*1.16,0.05,16,M.steelD); cap1.position.y=0.03; g.add(cap1);
-  const cap2 = cyl(barrelR*1.16,barrelR*1.16,0.05,16,M.steelD); cap2.position.y=barrelLen-0.03; g.add(cap2);
+  const barrel = cyl(barrelR,barrelR,barrelLen,16,M.dark); barrel.position.y = barrelLen/2; g.add(barrel);
   const rod  = cyl(rodR,rodR,1,14,M.chrome); g.add(rod);
   const eye  = cyl(rodR*1.9,rodR*1.9,rodR*2.6,12,M.steelD); eye.rotation.x=Math.PI/2; g.add(eye);
   scene.add(g);
@@ -861,10 +729,7 @@ function updateCyl(c,a,b){
   c.eye.position.y = len;
 }
 function makeBar(w,h,mat){
-  const g = new THREE.Group();
-  const m = box(w,1,h,mat||M.steelD); g.add(m);
-  scene.add(g);
-  return {g:g,m:m};
+  const g = new THREE.Group(); const m = box(w,1,h,mat||M.steelD); g.add(m); scene.add(g); return {g:g,m:m};
 }
 function updateBar(bar,a,b){
   const d = new THREE.Vector3().subVectors(b,a);
@@ -880,8 +745,11 @@ const cylBkt   = makeCyl(0.46,0.062,0.038);
 const cylBlade = makeCyl(0.30,0.055,0.032);
 const linkBkt  = makeBar(0.05,0.05,M.blue2);
 
+const tmpA = new THREE.Vector3();
+const tmpB = new THREE.Vector3();
+
 /* =========================================================================
-   7. 状態
+   7. 状態管理（土管の分離状態・2つの土管の位置）
    ========================================================================= */
 const S = {
   yaw:0, x:MACHINE_X0, z:MACHINE_Z0, pitch:0,
@@ -889,15 +757,32 @@ const S = {
   trackPhase:0, driveSpeed:0, load:0, throttle:0,
   running:false, won:false, time:0
 };
-const pipe = { pos:new THREE.Vector3(0.8,PIPE_REST,0.5), vel:new THREE.Vector3(), yaw:5*DEG, angVel:0, tilt:0, speed:0 };
+
+// 下側 U字土管（メイン）
+const pipe = { pos:new THREE.Vector3(PIPE_INIT_X, PIPE_REST, PIPE_INIT_Z), vel:new THREE.Vector3(), yaw:5*DEG, angVel:0, tilt:0, speed:0 };
+
+// 上側 ∩字土管（合体物）
+const pipeTop = {
+  pos: new THREE.Vector3(PIPE_INIT_X, PIPE_REST + 0.65, PIPE_INIT_Z),
+  vel: new THREE.Vector3(),
+  yaw: 5*DEG,
+  roll: Math.PI,
+  isSeparated: false
+};
 
 function resetAll(){
   S.yaw=0; S.x=MACHINE_X0; S.z=MACHINE_Z0; S.pitch=0;
   S.swing=0; S.boom=0.25; S.arm=-1.50; S.bkt=-0.20; S.bladeY=0.05;
   S.load=0; S.won=false; S.time=0;
-  pipe.pos.set(0.8,PIPE_REST,0.5); pipe.vel.set(0,0,0); pipe.yaw=5*DEG; pipe.angVel=0; pipe.tilt=0;
+
+  pipe.pos.set(PIPE_INIT_X, PIPE_REST, PIPE_INIT_Z);
+  pipe.vel.set(0,0,0); pipe.yaw=5*DEG; pipe.angVel=0; pipe.tilt=0;
+
+  pipeTop.pos.set(PIPE_INIT_X, PIPE_REST + 0.65, PIPE_INIT_Z);
+  pipeTop.vel.set(0,0,0); pipeTop.yaw=5*DEG; pipeTop.roll=Math.PI; pipeTop.isSeparated=false;
+
   for(const p of pushers) p.init=false;
-  camTargetSmooth.set(1.0,0.7,0.5);
+  camTargetSmooth.set(PIPE_INIT_X, 0.7, PIPE_INIT_Z);
   camAz=-0.30; camEl=0.40; camDist=11.5;
 }
 
@@ -951,7 +836,7 @@ bindBtn('bRight','right'); bindBtn('bBup','bup'); bindBtn('bBdn','bdn');
    9. カメラ
    ========================================================================= */
 let camAz=-0.30, camEl=0.40, camDist=11.5;
-const camTargetSmooth = new THREE.Vector3(1.0,0.7,0.5);
+const camTargetSmooth = new THREE.Vector3(PIPE_INIT_X, 0.7, PIPE_INIT_Z);
 let drag=false, lastX=0, lastY=0, pinch=null;
 
 canvas.addEventListener('pointerdown', e=>{
@@ -971,14 +856,6 @@ canvas.addEventListener('wheel', e=>{
   camDist = clamp(camDist + e.deltaY*0.012, 4.0, 30.0);
   e.preventDefault();
 },{passive:false});
-canvas.addEventListener('touchmove', e=>{
-  if(e.touches.length===2){
-    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
-    if(pinch!==null) camDist = clamp(camDist + (pinch-d)*0.026, 4.0, 30.0);
-    pinch=d; e.preventDefault();
-  }
-},{passive:false});
-canvas.addEventListener('touchend', ()=>{ pinch=null; });
 
 document.getElementById('btnCam').addEventListener('click', ()=>{ camAz=-0.30; camEl=0.40; camDist=11.5; });
 
@@ -1032,7 +909,7 @@ function updateAudio(){
 }
 
 /* =========================================================================
-   11. 物理：押し込み（HX/HZを入れ替え）
+   11. 物理：分解・衝突・押し込み
    ========================================================================= */
 const HX = PIPE_LEN/2 + 0.01;
 const HZ = PIPE_R_OUT + 0.015;
@@ -1051,12 +928,24 @@ function updatePushers(dt){
 
 function collidePipe(){
   let maxLoad = 0;
-  const sy = surfaceH(pipe.pos.x, pipe.pos.z);
   const c = Math.cos(pipe.yaw), s = Math.sin(pipe.yaw);
 
   for(let it=0; it<2; it++){
     for(const p of pushers){
       if(!p.init) continue;
+
+      // 1. 上の土管（合体状態）の崩し判定
+      if(!pipeTop.isSeparated){
+        const dTopX = p.cur.x - pipeTop.pos.x, dTopZ = p.cur.z - pipeTop.pos.z;
+        if(Math.abs(dTopX) < 1.3 && Math.abs(dTopZ) < 1.0 && p.cur.y > 0.45){
+          // バケットやアームで突かれたら分離して横へ倒す
+          pipeTop.isSeparated = true;
+          pipeTop.vel.set(p.vel.x*0.4 + (Math.random()-0.5), 1.2, p.vel.z*0.5 + 2.2);
+        }
+      }
+
+      // 2. メイン土管（下側）の押し込み衝突
+      const sy = surfaceH(pipe.pos.x, pipe.pos.z);
       if(p.cur.y < sy-0.18 || p.cur.y > sy+0.80) continue;
 
       const dx = p.cur.x - pipe.pos.x, dz = p.cur.z - pipe.pos.z;
@@ -1121,8 +1010,29 @@ function stepPipe(dt){
   pipe.tilt = lerp(pipe.tilt, onRamp? RAMP_ANGLE*0.96 : 0, Math.min(1,dt*4.0));
   pipe.speed = Math.hypot(pipe.vel.x,pipe.vel.z);
 
+  // 下の土管更新
   pipeMesh.position.set(pipe.pos.x, sy + PIPE_REST, pipe.pos.z);
   pipeMesh.rotation.set(0, pipe.yaw, pipe.tilt, 'YXZ');
+
+  // 上の土管更新（分離前か分離後か）
+  if(!pipeTop.isSeparated){
+    pipeTop.pos.set(pipe.pos.x, sy + PIPE_REST + 0.62, pipe.pos.z);
+    pipeTop.yaw = pipe.yaw;
+    pipeTopMesh.position.copy(pipeTop.pos);
+    pipeTopMesh.rotation.set(0, pipeTop.yaw, Math.PI, 'YXZ');
+  } else {
+    // 外れた後の落下・転がり動作
+    pipeTop.vel.y -= 9.8 * dt;
+    pipeTop.pos.addScaledVector(pipeTop.vel, dt);
+
+    if(pipeTop.pos.y < PIPE_REST){
+      pipeTop.pos.y = PIPE_REST;
+      pipeTop.vel.set(0,0,0);
+      pipeTop.roll = lerp(pipeTop.roll, 0, Math.min(1, dt*5));
+    }
+    pipeTopMesh.position.copy(pipeTop.pos);
+    pipeTopMesh.rotation.set(0, pipeTop.yaw, pipeTop.roll, 'YXZ');
+  }
 }
 
 /* =========================================================================
@@ -1221,7 +1131,20 @@ const el = {
 };
 let hudT=0;
 function updateHUD(dt){
-  const prog = clamp((pipe.pos.x - RAMP_X0)/(GOAL_X - RAMP_X0), 0, 1);
+  // 分解・移動・載せ込みの全体プログレス計算
+  let prog = 0;
+  if(!pipeTop.isSeparated){
+    prog = 0.05; // 分解前
+  } else {
+    // 移動 (PIPE_INIT_X ~ RAMP_X0) : 10% ~ 50%
+    // 載せ込み (RAMP_X0 ~ GOAL_X)  : 50% ~ 100%
+    if(pipe.pos.x < RAMP_X0){
+      prog = 0.10 + 0.40 * clamp((pipe.pos.x - PIPE_INIT_X)/(RAMP_X0 - PIPE_INIT_X), 0, 1);
+    } else {
+      prog = 0.50 + 0.50 * clamp((pipe.pos.x - RAMP_X0)/(GOAL_X - RAMP_X0), 0, 1);
+    }
+  }
+
   hudT += dt;
   if(hudT>0.08){
     hudT=0;
@@ -1238,12 +1161,11 @@ function updateHUD(dt){
 
     let h;
     if(prog>=1) h='🎉 載せ込み完了！ 荷台の奥まで押し切った！';
-    else if(prog>0.72) h='あと少し！ アーム押し＋バケットで押し足せ！';
-    else if(prog>0.15) h='登坂中！ 手を止めると土管がズルズル落ちてくる！';
-    else if(prog>0.001) h='スロープに乗った！ そのまま真っすぐ押し込め！';
-    else if(pipe.pos.x>2.3) h='スロープ入口だ。土管をまっすぐ当ててから前進！';
-    else if(S.bladeY>0.15) h='「ブレード ▼」（Fキー）で排土板を下げよう';
-    else h='排土板を土管に当てて「▲ 前進」（↑キー）でズズズ…と押す';
+    else if(!pipeTop.isSeparated) h='【STEP 1】バケットやアームで上の土管（∩）を突いて崩そう！';
+    else if(pipe.pos.x < 1.0) h='【STEP 2】排土板を下げるか前進して、土管（U）をダンプの前まで運ぼう！';
+    else if(pipe.pos.x < RAMP_X0) h='【STEP 2】ダンプのスロープ前に土管をまっすぐ付けよう！';
+    else if(prog > 0.75) h='【STEP 3】あと少し！ アーム押し＋バケットで押し足せ！';
+    else h='【STEP 3】登坂中！ 手を止めると土管がズルズル落ちてくるぞ！';
     el.hint.textContent = h;
 
     if(prog>=1 && !S.won){
